@@ -1,0 +1,28 @@
+.container {
+	margin-bottom: 50px
+}
+
+.shadow {
+   box-shadow: 0 5px 25px 0 rgba(0,0,0,.2);
+   padding: 0px;
+   margin-top: 20px;
+   position: relative;
+}
+
+.shadow h6 {
+	position: absolute;
+	background-color: rgba(0,0,0,0.4);
+	display: inline-block;
+	color:#fff;
+	padding: 15px 15px 5px;
+	border-top-right-radius: 5px: 
+	left:10px;
+	bottom: 0;
+	margin-bottom: 0!important
+}
+
+.shadow span {
+	color:yellow;
+	display: block;
+	font-size:12px;
+}
