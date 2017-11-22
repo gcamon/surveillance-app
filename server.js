@@ -8,19 +8,22 @@ var express = require('express'),
   app = express(),
   http = require('http').Server(app),
   io = require('socket.io')(http),
-  model = db(),
+  streams = require('./streams.js')(),
  
   mySocket = require("./socket"),
-  port = process.env.PORT || 3000;
+  port = process.env.PORT || 8080;
 
 http.listen(port,function(){
     console.log('listening on *:' + port);
 });
 
+config.configuration(app);
+signupRoute(db);
+console.log("it happened")
+loginRoute(db,streams);
+route(db,streams); 
+mySocket(io,streams);
 
-config.configuration(app,model);
-//signupRoute(model);
-//loginRoute(model);
-route(model); 
-route(model); 
-mySocket(model,io);
+
+      
+    

@@ -7,7 +7,7 @@ var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-var configuration = function (app,model) {
+var configuration = function (app) {
   //config 
 
 	app.use('/assets',express.static(__dirname + '/public'));
@@ -17,13 +17,13 @@ var configuration = function (app,model) {
 	  saveUninitialized: true,
 	  cookie: {
 	  	httpOnly: true, 
-	  	maxAge: 3600000 * 48,
-	  	path: "/user"
+	  	path: "/",
+	  	//maxAge: 3600000 * 72,
 	  } //secure: true will be set on the cookie when i this site is on https
 	}));
 
-	app.use(passport.initialize());
-	app.use(passport.session());
+	//app.use(passport.initialize());
+	//app.use(passport.session());
 	app.use(flash());		
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
@@ -38,7 +38,7 @@ var configuration = function (app,model) {
 		}		
 	});*/
 
-	passport.serializeUser(function(user, done) {    
+	/*passport.serializeUser(function(user, done) {    
     	done(null, user._id);
 	});
 
@@ -46,7 +46,7 @@ var configuration = function (app,model) {
 		model.user.findById(id, function(err, user) {
 			done(err, user);
 		});
-	});
+	});*/
 
 	app.set('view engine', 'ejs');
 	app.set('views', __dirname + '/views');
@@ -58,5 +58,5 @@ var configuration = function (app,model) {
 module.exports = {
   configuration: configuration,
   router: router,
-  passport: passport	
+  //passport: passport	
 }
