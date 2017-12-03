@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `controls4` (
   `email` varchar(50) NOT NULL,
   `control_url` varchar(50) NOT NULL,
   `date_created` DATE,
-  CONSTRAINT unique_id PRIMARY KEY (`id`));
+  CONSTRAINT unique_id PRIMARY KEY (`id`)
 );
 
 

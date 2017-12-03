@@ -3,6 +3,7 @@
 		function($locationProvider){$locationProvider.html5Mode(true);}
     );
 	var client = new PeerManager(name);
+	client.allsources = [];
 	var mediaConfig = {
         audio:true,
         video: {
@@ -11,31 +12,27 @@
         }
     };
 
+	var videoElement = document.querySelector('video');
+	var audioSelect = document.querySelector('select#audioSource');
+	var videoSelect = document.querySelector('select#videoSource');
 
-    navigator.mediaDevices.enumerateDevices()
-  	.then(gotDevices).then(getStream).catch(handleError);
+	  
+		
+    
+		//var audioSelect = document.getElementById("audioselect");
+		
+  
 
-  	function gotDevices(devices) {
-  		console.log("ibiakwaaaaaa")
-  		console.log(devices);
-  	}
-
-  	function getStream() {
-  		
-  	}
-
-  	function handleError() {
-  		
-  	}
+	  
 
 
-    navigator.mediaDevices.getUserMedia(mediaConfig)
+    /*navigator.mediaDevices.getUserMedia(mediaConfig)
     .then(function(stream){
     	console.log(stream.getTracks())
     })
     .catch(function(err) {
     		console.log(err)
-    })
+    })*/
 
     app.factory("localManager",["$window",function($window){
 		  return {
@@ -55,11 +52,9 @@
     	var camera = {};
     	camera.preview = $window.document.getElementById('localVideo');
     	//Get the camera stream and attach to be passed onto a web element
-    	camera.start = function(){
-				return requestUserMedia(mediaConfig)
-				.then(function(stream){
-					console.log("yesssssssssssss");
-					console.log(stream);
+    	camera.start = function(constraints){
+				return requestUserMedia(constraints)
+				.then(function(stream){					
 					console.log(stream.getTracks());			
 					attachMediaStream(camera.preview, stream);
 					client.setLocalStream(stream);
@@ -204,7 +199,9 @@
 	app.controller('RemoteStreamsController', ["$scope",'camera', '$location', '$http','$window', function($scope,camera, $location, $http, $window){
 		var rtc = this;
 		rtc.remoteStreams = [];
-
+		console.log("got devices connected to laptop");
+		console.log(client.allsources);
+		rtc.allDevices = client.allsources;
 		function getStreamById(id) {
 		    for(var i=0; i<rtc.remoteStreams.length;i++) {
 		    	if (rtc.remoteStreams[i].id === id) {return rtc.remoteStreams[i];}
@@ -314,26 +311,62 @@
 	    	localStream.cameraIsOn = data;
 	    });
 		});
+		////////////////////
+		navigator.mediaDevices.enumerateDevices()
+  	.then(gotDevices).then(getStream).catch(handleError);
+
+  	function gotDevices(deviceInfos) {
+  		console.log("ibiakwaaaaaa");
+  		console.log(deviceInfos);
+		 for (var i = 0; i < deviceInfos.length; ++i) {
+				var deviceInfo = deviceInfos[i];
+				var option = {};
+				option.value = deviceInfo.deviceId;
+				/*if (deviceInfo.kind === 'audioinput') {
+				option.text = deviceInfo.label ||
+				'microphone ' + i;
+				
+				} else */if (deviceInfo.kind === 'videoinput') {
+				option.text = deviceInfo.label || 'camera ' + i;
+				client.allsources.push(option)
+				getStream({value:option.value});
+				
+				} else {
+				console.log('Found one other kind of source/device: ', deviceInfo);
+				}
+				
+		 }
+  	}
+		$scope.$watch("localStream.device",function(newVal,oldVal){
+			alert(newVal)
+			if(newVal)
+			 getStream({value:newVal});
+		})
 
 		localStream.getControlId = function(id){
 			console.log(id)
 			saveControlId.id = id;		
 		}
 
-		localStream.toggleCam = function(){
+
+
+			console.log("got devices connected to laptop");
+			console.log(client.allsources);
+			localStream.allDevices = client.allsources;
+
+		localStream.toggleCam = function(constraints){
 			if(localStream.cameraIsOn){
 				localManager.removeItem("username");
 				camera.stop()
 				.then(function(result){
 					client.send('leave');
 	    			client.setLocalStream(null);
-
 				})
 				.catch(function(err) {
 					console.log(err);
 				});
 			} else {
-				camera.start()
+				camera.start(constraints)
 				.then(function(result) {
 					localStream.link = $window.location.host + '/' + client.getId();
 					if(localManager.getValue("username") !== "Guest" || localManager.getValue("username") !== ""){
@@ -346,6 +379,44 @@
 				});
 			}
 		};
+
+
+
+
+	  function getStream(cam) {
+  		if (window.stream) {
+				window.stream.getTracks().forEach(function(track) {
+				track.stop();
+				});
+			}
+			if(cam) {
+				console.log("deviuce in use is ...");
+				console.log(cam);
+			var constraints = {
+				audio: true,
+				video: {
+					deviceId: {exact: cam.value}
+				}
+			};
+			//localStream.toggleCam(constraints);
+  		navigator.mediaDevices.getUserMedia(constraints).then(gotStream).catch(handleError);
+			}
+  	}
+
+  	function gotStream(stream) {
+			console.log("all available streams");
+			console.log(stream)
+			window.stream = stream; // make stream available to console
+			//var videoElement.srcObject = stream;
+			var container = document.getElementById("localV");
+			var videoElem = document.createElement('video')
+			videoElem.srcObject = stream;
+			container.appendChild(videoElem);
+		}
+
+		function handleError(error) {
+			console.log('Error: ', error);
+		}
 
 	}]);
 })();

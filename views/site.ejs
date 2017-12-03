@@ -30,23 +30,28 @@
 
 		    <header style="background-color: #d9edf7" ng-controller="LocalStreamController as localStream" class="row">
 		    	<div class="col-sm-12 col-md-8 col-lg-8" style="text-align: center;padding: 30px 0 0px 100px">
-			    	
+			    	<select ng-model="localStream.device" style="width:200px">
+						<option ng-repeat="device in localStream.allDevices" value="{{device.value}}">{{device.text}}</option>
+					</select>
 			    	<span ng-cloak>{{localStream.getControlId('<%= details[0].control_id %>')}} Appear as: </span>
 			    	<input ng-model="localStream.name" class="form-control" style="width: 50%;display: inline-block;"/>
-			    	<a href ng-click="localStream.toggleCam()" class="btn btn-primary">{{ localStream.cameraIsOn ? 'Streaming... ( stop )' : 'Start' }}</a>
-			    	
+			    	<a href ng-click="localStream.toggleCam()" class="btn btn-primary">{{ localStream.cameraIsOn ? 'Streaming... ( stop )' : 'Start' }}</a>			    	
 		    	</div>
 		    	<div  class="col-sm-12 col-md-4 col-lg-4">
 		    		<div class="row">
 		    			<div class="col-sm-12 col-md-7 col-lg-7">
-		    				<video id="localVideo" muted="muted" autoplay="true" style="width: 100px;height:100px;"></video>
+		    				<video id="localVideo" muted="muted" autoplay="true" style="width: 200px;height:200px;"></video>
 		    			</div>
 		    			<div class="col-sm-12 col-md-5 col-lg-5" style="text-align: center;padding:30px 30px 0 0">
 		    				<button ng-click="allLocalStreams()" class="btn btn-primary">View remote streams</button>
 		    			</div>
-		    		</div>		    		
-		    		
+		    	    </div>	    		
 		    	</div>
+		    	<div>
+		    	</div>
+				<div id="localV">
+					
+				</div>
 
 		    </header>
 		   
